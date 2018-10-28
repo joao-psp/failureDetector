@@ -55,7 +55,8 @@ public class BNode extends Node {
     }
   }
 
-  public void AnswerMessage(BMessage msg){
+  public void AnswerMessage(BMessage msg){ // se recebeu resposta, então aguarda o resultado da eleição
+                                          //e solicita que os maiores que ele iniciem a eleição
     if(msg.getId() > this.getID()){
       System.out.println(String.format("%s Recebendo Resposta de %s", this, msg.getId()));
       this.max++;
@@ -67,7 +68,7 @@ public class BNode extends Node {
     }
   }
 
-  public void auxCoord(BMessage msg){
+  public void auxCoord(BMessage msg){ // função para quando o ultimo n receber nada ele mandar broadcast
     BMessage coordMSG = new BMessage(this.getID(), MessageType.COORDENATOR, this);
     System.out.println(String.format("%d sending msg COORD para todos", this.getID()));
     this.color = Color.GREEN;
@@ -75,7 +76,8 @@ public class BNode extends Node {
   }
 
 
-  public void ElectionMessage(BMessage msg) {
+  public void ElectionMessage(BMessage msg) { // após receber mensagem com ELECTION, manda uma resposta para o sender, avisando que
+                                              // "está vivo"
 
     if (msg.getId() < this.getID()) {
       BMessage answerMSG = new BMessage(this.getID(), MessageType.ANSWER, this);
@@ -84,7 +86,7 @@ public class BNode extends Node {
     }
   }
 
-  public void startE( BNode node){
+  public void startE( BNode node){ // manda mensagem do tipo eleição para ver se alguem maior que ele responde...
     int aux =0;
       for( BNode gt: node.getGreaters()){
         BMessage electionMSG = new BMessage(node.getID(), MessageType.ELECTION, node);
