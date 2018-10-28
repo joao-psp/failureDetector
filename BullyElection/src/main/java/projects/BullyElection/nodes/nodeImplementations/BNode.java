@@ -15,6 +15,7 @@ import sinalgo.nodes.Connections;
 import sinalgo.nodes.edges.Edge;
 import projects.election.nodes.nodeImplementations.BNode;
 import projects.election.nodes.messages.BMessage;
+import projects.election.nodes.timers.BTimer;
 
 public class BNode extends Node {
 
@@ -62,6 +63,7 @@ public class BNode extends Node {
 
     if(this.max == this.getGreaters().size()){
         startE(this.getGreaters().get(0));
+        this.getGreaters().get(0).color = Color.RED;
     }
   }
 
@@ -78,6 +80,7 @@ public class BNode extends Node {
     if (msg.getId() < this.getID()) {
       BMessage answerMSG = new BMessage(this.getID(), MessageType.ANSWER, this);
       send(answerMSG, msg.getSender());
+      this.color = Color.BLACK;
     }
   }
 
@@ -144,8 +147,8 @@ public class BNode extends Node {
   @NodePopupMethod(menuText = "Start Election")
   public void startElection() {
     BMessage msg = new BMessage(this.getID(), MessageType.ELECTION,this);
-    projects.election.nodes.timers.BTimer timer = new projects.election.nodes.timers.BTimer(this, successor, 1);
-
+    BTimer timer = new projects.election.nodes.timers.BTimer(this, successor, 1);
+    this.getGreaters().get(0).color = Color.RED;
     timer.startRelative(1, this);
     Tools.appendToOutput(String.format("Start Routing from %s \n", this));
   }
