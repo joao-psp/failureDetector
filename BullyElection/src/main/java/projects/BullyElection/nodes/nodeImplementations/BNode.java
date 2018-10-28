@@ -101,6 +101,7 @@ public class BNode extends Node {
   public void CoordMessage(BMessage msg) {
     this.elected = msg.getId();
     System.out.println(String.format("%s definindo %s como LIDER", this, msg.getId()));
+    this.color = Color.BLACK;
   }
 
   public String toString() {
