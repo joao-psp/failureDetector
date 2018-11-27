@@ -22,11 +22,13 @@ public class BNode extends Node {
   private Color color = Color.BLUE;
   private long elected;
   private BNode successor;
-  private sendMessage = True;
+  private boolean sendMessage = true;
   private int max=0;
   private long hbNumber = 0;
+  private int lastSeqNumber = 0;
   private ArrayList< BNode> greaters = new ArrayList();
-  private HashMap<Integer, String> hmap = new HashMap<Integer, String>();
+  private HashMap<Long, Long> hbTable = new HashMap<Long, Long>();
+
   public BNode() {
     super();
   }
@@ -48,8 +50,8 @@ public class BNode extends Node {
     }
   }
 
-  public void updateTable(BMessage msg){
-    System.out.println("uhashu "+ msg.getSeqNumber());
+  public void updateTable(BMessage msg) {
+    hbTable.put(msg.getId(), msg.getSeqNumber());
   }
 
 
@@ -76,6 +78,7 @@ public class BNode extends Node {
         successor = endNode.compareTo(successor) < 0 ? endNode : successor;
       }
     }
+
   }
 
   public void draw(Graphics g, PositionTransformation pt, boolean highlight) {
@@ -86,13 +89,13 @@ public class BNode extends Node {
     super.drawNodeAsDiskWithText(g, pt, highlight, text, 35, textColor);
   }
 
-  public ArrayList< BNode> getGreaters(){
+  public ArrayList<BNode> getGreaters(){
     return this.greaters;
   }
 
-  @NodePopupMethod(menuText = "Start Election")
+  @NodePopupMethod(menuText = "Nó a Falhar")
   public void startElection() {
-    // colocar aqui para parar de mandar mensagem
+    this.sendMessage = false;
   }
 
   public void preStep() { // atualiza seqNumber
@@ -107,6 +110,10 @@ public class BNode extends Node {
       BMessage broadcastMessage = new BMessage(this.getID(), MessageType.HEARTBEAT, this.hbNumber);
       broadcast(broadcastMessage);
     }
+    System.out.println(this.hbTable.toString());
+
+    //verifica se hb < que o dele, se for falhou
+    
   }
 
   public void checkRequirements() {
@@ -114,6 +121,7 @@ public class BNode extends Node {
 
   public void compute() {
   }
+
 }
 
 
