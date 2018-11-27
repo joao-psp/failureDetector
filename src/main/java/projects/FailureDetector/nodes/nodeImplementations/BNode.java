@@ -20,6 +20,7 @@ import projects.election.nodes.timers.BTimer;
 public class BNode extends Node {
 
   private Color color = Color.BLUE;
+  private int waitTime = 0;
   private long elected;
   private BNode successor;
   private boolean sendMessage = true;
@@ -27,7 +28,7 @@ public class BNode extends Node {
   private long hbNumber = 0;
   private int lastSeqNumber = 0;
   private ArrayList< BNode> greaters = new ArrayList();
-  private HashMap<Long, Long> hbTable = new HashMap<Long, Long>();
+  private HashMap<BNode, Long> hbTable = new HashMap<BNode, Long>();
 
   public BNode() {
     super();
@@ -51,7 +52,22 @@ public class BNode extends Node {
   }
 
   public void updateTable(BMessage msg) {
-    hbTable.put(msg.getId(), msg.getSeqNumber());
+    hbTable.put(msg.getSender(), msg.getSeqNumber());
+
+  if(this.sendMessage){
+      HashMap<BNode, Long> hbTableAux = new HashMap<BNode, Long>(this.hbTable);
+      Iterator it = hbTableAux.entrySet().iterator();
+      while(it.hasNext()) {
+        Map.Entry pair = (Map.Entry)it.next();
+        BNode node = (BNode)pair.getKey();
+        long heartbeat = (long)pair.getValue();
+        if(this.hbNumber > heartbeat+4 ) {
+          System.out.println(this + " : " + node+ " FALHOU :/");
+          node.color = color.RED;
+          this.hbTable.remove(node);
+        }
+      }
+  }
   }
 
 
@@ -96,21 +112,22 @@ public class BNode extends Node {
   @NodePopupMethod(menuText = "Nó a Falhar")
   public void startElection() {
     this.sendMessage = false;
-    this.color = Color.RED;
+    this.color = Color.PINK;
   }
 
   public void preStep() { // atualiza seqNumber
     this.hbNumber++;
+    if(this.sendMessage){
+      BMessage broadcastMessage = new BMessage(this.getID(), MessageType.HEARTBEAT, this.hbNumber, this);
+      broadcast(broadcastMessage);
+    }
   }
 
   public void init() {
   }
 
   public void postStep() {// manda pra todos
-    if(this.sendMessage){
-      BMessage broadcastMessage = new BMessage(this.getID(), MessageType.HEARTBEAT, this.hbNumber);
-      broadcast(broadcastMessage);
-    }
+    if(this.sendMessage)
     System.out.println(this.hbTable.toString());
 
     //if(this.hbNumber > this.hbTable.get(0)){}
@@ -121,6 +138,10 @@ public class BNode extends Node {
   }
 
   public void compute() {
+  }
+
+  public String toString() {
+    return "Node " + this.getID();
   }
 
 }

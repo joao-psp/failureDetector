@@ -10,15 +10,17 @@ public class BMessage extends Message {
   public long id;
   public long seqNumber;
   public MessageType type;
+  public BNode sender;
 
-  public BMessage(long id, MessageType type, long seqNumber) {
+  public BMessage(long id, MessageType type, long seqNumber, BNode sender) {
     this.id = id;
     this.seqNumber = seqNumber;
     this.type = type;
+    this.sender = sender;
   }
 
   public Message clone() {
-    return new projects.election.nodes.messages.BMessage(id, type, seqNumber);
+    return new BMessage(id, type, seqNumber, sender);
   }
 
   public long getId() {
@@ -32,6 +34,10 @@ public class BMessage extends Message {
 
   public long getSeqNumber(){
     return this.seqNumber;
+  }
+
+  public BNode getSender(){
+    return this.sender;
   }
 
   public void setSeqNumber(long seqNumber){
