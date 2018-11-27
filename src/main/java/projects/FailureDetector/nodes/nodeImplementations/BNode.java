@@ -67,7 +67,7 @@ public class BNode extends Node {
           this.hbTable.remove(node);
         }
       }
-  }
+    }
   }
 
 
