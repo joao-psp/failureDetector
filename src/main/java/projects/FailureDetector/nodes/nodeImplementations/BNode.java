@@ -96,6 +96,7 @@ public class BNode extends Node {
   @NodePopupMethod(menuText = "Nó a Falhar")
   public void startElection() {
     this.sendMessage = false;
+    this.color = Color.RED;
   }
 
   public void preStep() { // atualiza seqNumber
@@ -112,8 +113,8 @@ public class BNode extends Node {
     }
     System.out.println(this.hbTable.toString());
 
-    //verifica se hb < que o dele, se for falhou
-    
+    //if(this.hbNumber > this.hbTable.get(0)){}
+
   }
 
   public void checkRequirements() {
