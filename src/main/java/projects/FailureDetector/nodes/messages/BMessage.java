@@ -25,9 +25,6 @@ public class BMessage extends Message {
     return this.id;
   }
 
-  // public BNode getSender(){
-  //   return this.sender;
-  // }
 
   public void setId(long id) {
     this.id = id;

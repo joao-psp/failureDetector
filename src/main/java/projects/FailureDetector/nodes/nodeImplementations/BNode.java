@@ -21,8 +21,10 @@ public class BNode extends Node {
 
   private Color color = Color.BLUE;
   private long elected;
-  private  BNode successor;
+  private BNode successor;
+  private sendMessage = True;
   private int max=0;
+  private long hbNumber = 0;
   private ArrayList< BNode> greaters = new ArrayList();
   private HashMap<Integer, String> hmap = new HashMap<Integer, String>();
   public BNode() {
@@ -47,7 +49,7 @@ public class BNode extends Node {
   }
 
   public void updateTable(BMessage msg){
-
+    System.out.println("uhashu "+ msg.getSeqNumber());
   }
 
 
@@ -90,20 +92,21 @@ public class BNode extends Node {
 
   @NodePopupMethod(menuText = "Start Election")
   public void startElection() {
-  //   BMessage msg = new BMessage(this.getID(), MessageType.ELECTION,this);
-  //   BTimer timer = new projects.election.nodes.timers.BTimer(this, successor, 1);
-  //   this.getGreaters().get(0).color = Color.RED;
-  //   timer.startRelative(1, this);
-  //   Tools.appendToOutput(String.format("Start Routing from %s \n", this));
+    // colocar aqui para parar de mandar mensagem
   }
 
-  public void preStep() {
+  public void preStep() { // atualiza seqNumber
+    this.hbNumber++;
   }
 
   public void init() {
   }
 
-  public void postStep() {
+  public void postStep() {// manda pra todos
+    if(this.sendMessage){
+      BMessage broadcastMessage = new BMessage(this.getID(), MessageType.HEARTBEAT, this.hbNumber);
+      broadcast(broadcastMessage);
+    }
   }
 
   public void checkRequirements() {
