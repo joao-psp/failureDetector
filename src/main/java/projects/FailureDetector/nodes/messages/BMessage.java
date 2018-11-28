@@ -4,8 +4,6 @@ import sinalgo.nodes.messages.Message;
 import projects.election.enums.MessageType;
 import  projects.election.nodes.nodeImplementations.BNode;
 
-
-/* Description of Message Type */
 public class BMessage extends Message {
   public long id;
   public long seqNumber;
