@@ -56,7 +56,7 @@ public class BNode extends Node {
         Map.Entry pair = (Map.Entry)it.next();
         BNode node = (BNode)pair.getKey();
         long heartbeatNumber = (long)pair.getValue();
-        if(this.roundNumber - heartbeatNumber > 1) { // 1 rodada
+        if(this.roundNumber - heartbeatNumber > 0) { // 1 rodada, na proxima ja da falha 
           System.out.println(this + " : " + node+ " FALHOU :/");
           node.color = color.RED;
           this.hbTable.remove(node);
