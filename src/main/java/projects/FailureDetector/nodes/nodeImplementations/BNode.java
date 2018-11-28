@@ -20,14 +20,10 @@ import projects.election.nodes.timers.BTimer;
 public class BNode extends Node {
 
   private Color color = Color.BLUE;
-  private int waitTime = 0;
-  private long elected;
   private BNode successor;
   private boolean sendMessage = true;
-  private int max=0;
+  private long roundNumber = 0;
   private long hbNumber = 0;
-  private int lastSeqNumber = 0;
-  private ArrayList< BNode> greaters = new ArrayList();
   private HashMap<BNode, Long> hbTable = new HashMap<BNode, Long>();
 
   public BNode() {
@@ -52,16 +48,16 @@ public class BNode extends Node {
   }
 
   public void updateTable(BMessage msg) {
-    hbTable.put(msg.getSender(), msg.getSeqNumber());
-
-  if(this.sendMessage){
+    if(this.sendMessage){
+      hbTable.put(msg.getSender(), roundNumber);
       HashMap<BNode, Long> hbTableAux = new HashMap<BNode, Long>(this.hbTable);
       Iterator it = hbTableAux.entrySet().iterator();
+
       while(it.hasNext()) {
         Map.Entry pair = (Map.Entry)it.next();
         BNode node = (BNode)pair.getKey();
-        long heartbeat = (long)pair.getValue();
-        if(this.hbNumber > heartbeat+4 ) {
+        long heartbeatNumber = (long)pair.getValue();
+        if(this.roundNumber - heartbeatNumber > 1) { // 1 rodada
           System.out.println(this + " : " + node+ " FALHOU :/");
           node.color = color.RED;
           this.hbTable.remove(node);
@@ -73,28 +69,6 @@ public class BNode extends Node {
 
   @Override
   public void neighborhoodChange() {
-
-    Connections nodeConnections = this.getOutgoingConnections();
-     BNode firstConnectionNode = ( BNode) nodeConnections.iterator().next().getEndNode();
-    successor = null;
-    int i = 0;
-    for (Edge edge : nodeConnections) {
-       BNode endNode = ( BNode) edge.getEndNode();
-      if (endNode.getID() > this.getID()) {
-        this.greaters.add(endNode);
-      }
-    }
-    if(!this.greaters.isEmpty())
-    System.out.println(String.format("%s", this.greaters.get(0)));
-
-    if (successor == null) {
-      successor = firstConnectionNode;
-      for (Edge edge : nodeConnections) {
-         BNode endNode = ( BNode) edge.getEndNode();
-        successor = endNode.compareTo(successor) < 0 ? endNode : successor;
-      }
-    }
-
   }
 
   public void draw(Graphics g, PositionTransformation pt, boolean highlight) {
@@ -105,19 +79,17 @@ public class BNode extends Node {
     super.drawNodeAsDiskWithText(g, pt, highlight, text, 35, textColor);
   }
 
-  public ArrayList<BNode> getGreaters(){
-    return this.greaters;
-  }
 
-  @NodePopupMethod(menuText = "Nó a Falhar")
+  @NodePopupMethod(menuText = "Nó apresenta Falhas") // setar que vai falhar
   public void startElection() {
     this.sendMessage = false;
-    this.color = Color.PINK;
+    this.color = Color.ORANGE;
   }
 
   public void preStep() { // atualiza seqNumber
-    this.hbNumber++;
     if(this.sendMessage){
+      this.hbNumber++;
+      this.roundNumber++;
       BMessage broadcastMessage = new BMessage(this.getID(), MessageType.HEARTBEAT, this.hbNumber, this);
       broadcast(broadcastMessage);
     }
@@ -129,9 +101,6 @@ public class BNode extends Node {
   public void postStep() {// manda pra todos
     if(this.sendMessage)
     System.out.println(this.hbTable.toString());
-
-    //if(this.hbNumber > this.hbTable.get(0)){}
-
   }
 
   public void checkRequirements() {
