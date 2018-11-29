@@ -97,15 +97,34 @@ public class BNode extends Node {
   public void init() {
   }
 
+  public HashMap<BNode, Long> getHT(){
+    return this.hbTable;
+    }
+
   public void postStep() {// manda pra todos
-    if(this.sendMessage)
-    System.out.println(this.hbTable.toString());
+    if(this.sendMessage){
+      Iterator it = this.hbTable.entrySet().iterator();
+      String aux = "{";
+
+      while(it.hasNext()) {
+        Map.Entry pair = (Map.Entry)it.next();
+        BNode node = (BNode)pair.getKey();
+        long heartbeatNumber = (long)pair.getValue();
+          aux+= (node + " = "+node.getHbNumber().toString()+", ");
+      }
+      aux+= "}";
+      System.out.println(aux);
+    }
   }
 
   public void checkRequirements() {
   }
 
   public void compute() {
+  }
+
+  public Long getHbNumber(){
+    return this.hbNumber;
   }
 
   public String toString() {
